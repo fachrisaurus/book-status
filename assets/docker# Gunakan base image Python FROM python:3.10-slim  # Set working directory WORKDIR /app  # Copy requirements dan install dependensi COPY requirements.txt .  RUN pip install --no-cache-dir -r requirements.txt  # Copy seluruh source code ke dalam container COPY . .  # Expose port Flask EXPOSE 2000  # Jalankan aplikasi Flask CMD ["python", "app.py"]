@@ -1,0 +1,66 @@
+chat
+  
+  # Gunakan base image Python
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements dan install dependensi
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy seluruh source code ke dalam container
+COPY . .
+
+# Expose port Flask
+EXPOSE 2000
+
+# Jalankan aplikasi Flask
+CMD ["python", "app.py"]
+
+
+
+
+  docker build -t opsml-app .
+docker run -p 2000:2000 --env-file .env opsml-app
+
+
+
+
+
+  awan
+
+  FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app.py .
+COPY templates/ templates/
+COPY static/ static/
+
+# Create .env file with environment variables
+RUN echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" > .env && \
+    echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env && \
+    echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env && \
+    echo "AWS_REGION=$AWS_REGION" >> .env && \
+    echo "ATHENA_SCHEMA_NAME=$ATHENA_SCHEMA_NAME" >> .env && \
+    echo "S3_STAGING_DIR=$S3_STAGING_DIR" >> .env && \
+    echo "FLASK_SECRET_KEY=lks" >> .env && \
+    echo "API_GATEWAY_URL=$API_GATEWAY_URL" >> .env && \
+    echo "SNS_TOPIC_ARN=$SNS_TOPIC_ARN" >> .env
+
+# Install dotenv to load environment variables
+RUN pip install python-dotenv
+
+# Expose the port the app runs on
+EXPOSE 2000
+
+# Command to run the application
+CMD ["python", "app.py"]
