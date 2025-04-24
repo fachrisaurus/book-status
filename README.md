@@ -1,4 +1,5 @@
 tolong buatkan saya terraform di region us-east-1
+catatan: role yang digunakan hanya arn:aws:iam::488665884770:role/LabRole
 
 1. VPC name: techno-fachri
 with a CIDR block of 25.1.0.0/16 and an IPv6 range provided by Amazon
@@ -22,6 +23,12 @@ b. techno-sg-apps, open port 2000 to public access
 8. S3
 a. technoinput-malang-fachri
 b. technooutput-malang-fachri
+bucket policy must be applied to allow public read access where appropriate —
+particularly for assets that need to be accessed by users or external systems. This 
+involves careful configuration of the policy JSON to avoid security 
+misconfigurations while enabling necessary access. Users are encouraged to refer 
+to the AWS documentation on S3 Bucket Policies to ensure compliance and 
+proper implementation
 
 9. DynamoDB name: Tokens
 partition key named token of type String
@@ -34,11 +41,24 @@ the user must provision 1 shard, which provides a baseline throughput of 1 MB/se
 a. database name: rekognition_results_db
 b. table name: rekognition_results_table
 The source data for this Glue table is in the S3 bucket s3://technooutput-malang-fachri/results
+This path is expected to contain JSON files or similar formats resulting from image analysis or machine learning processes.
+
 c. Glue Crawler name: techno-crawler-fachri
+This crawler is responsible for automatically detecting the schema of the data stored in the S3 location and updating the rekognition_results_table accordingly. The crawler should be 
+scheduled or triggered based on data arrival patterns to ensure the catalog remains up to date and queryable in near real-time
 
 
-Simple Notifications Services (SNS)
+12. Simple Notifications Services (SNS) name: techno-sns-malang-fahri
+Once the topic is created, an email subscription must be configured so that all 
+messages published to the topic are delivered to the following address:
+handi@seamolec.org.
 
-LAMBDA FUNCTION
+13. REST API Gateway Service name: 
+regional endpoint type and use IPV4 and IPV6
+The API should have the following resources and 
+methods:
+- A resource named /generate-token, with the following HTTP methods:
+o POST (/generate-token /POST) to create a new token
+- A resource named /validate-token, with the following HTTP methods:
+o GET (/validate-token /GET) to validate token.
 
-API Gateway Service
